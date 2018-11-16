@@ -9,8 +9,46 @@ import { getMenuData } from '@/utils/menu';
 import SiderMenu from '@/components/SiderMenu';
 import Header from './Header';
 import { connect } from 'dva';
+import { formatMessage } from 'umi/locale';
+import memoizeOne from 'memoize-one';
+import isEqual from 'lodash/isEqual';
+
 
 const { Content } = Layout;
+
+// Conversion router to menu.
+function formatter(data, parentAuthority, parentName) {
+  return data
+    .map(item => {
+      if (!item.name || !item.path) {
+        return null;
+      }
+
+      let locale = 'menu';
+      if (parentName) {
+        locale = `${parentName}.${item.name}`;
+      } else {
+        locale = `menu.${item.name}`;
+      }
+
+      const result = {
+        ...item,
+        name: formatMessage({ id: locale, defaultMessage: item.name }),
+        locale,
+        authority: item.authority || parentAuthority,
+      };
+      if (item.routes) {
+        const children = formatter(item.routes, item.authority, locale);
+        // Reduce memory usage
+        result.children = children;
+      }
+      delete result.routes;
+      return result;
+    })
+    .filter(item => item);
+}
+
+const memoizeOneFormatter = memoizeOne(formatter, isEqual);
 
 const query = {
   'screen-xs': {
@@ -41,6 +79,15 @@ const query = {
   collapsed: global.collapsed,
 }))
 class BasicLayout extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.getPageTitle = memoizeOne(this.getPageTitle);
+  }
+
+  state = {
+    menuData: this.getMenuData(),
+  };
 
   handleMenuCollapse = collapsed => {
     const { dispatch } = this.props;
@@ -90,6 +137,14 @@ class BasicLayout extends React.Component {
     };
   }
 
+  getMenuData() {
+    const {
+      route: { routes },
+    } = this.props;
+    console.log(routes);
+    return memoizeOneFormatter(routes);
+  }
+
   render() {
     const { 
       navTheme,
@@ -97,6 +152,7 @@ class BasicLayout extends React.Component {
       location: { pathname },
     } = this.props;
 
+    const { menuData } = this.state;
 
     const layout = (
       <Layout>
@@ -118,7 +174,7 @@ class BasicLayout extends React.Component {
             theme="dark"
             fixSiderbar={true}
             onCollapse={this.handleMenuCollapse}
-            menuData={getMenuData()}
+            menuData={menuData}
             {...this.props}
           />
           <Layout

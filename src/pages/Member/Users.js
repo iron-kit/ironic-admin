@@ -1,3 +1,7 @@
+/**
+ * name: VIP Manager
+ */
+
 import styles from './Users.less';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 

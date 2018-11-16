@@ -1,5 +1,5 @@
 /**
- * title: App Layout
+ * title: Ironic Admin
  * Routes:
  *   - src/layouts/Authorized.js
  * authority:
