@@ -3,6 +3,7 @@ import { fakeAccountLogin } from '@/services/api';
 import { routerRedux } from 'dva/router';
 import { getPageQuery } from '@/utils/utils';
 import { setAuthority } from '@/utils/authority';
+import { stringify } from 'qs';
 
 export default {
   namespace: 'login',
@@ -39,7 +40,26 @@ export default {
         }
         yield put(routerRedux.replace(redirect || '/'));
       }
-    }
+    },
+
+    *logout({ payload }, { call, put }) {
+      yield put({
+        type: 'changeLoginStatus',
+        payload: {
+          status: false,
+          currentAuthority: 'guest',
+        },
+      });
+      reloadAuthorized();
+      yield put(
+        routerRedux.push({
+          pathname: '/user/login',
+          search: stringify({
+            redirect: window.location.href,
+          }),
+        })
+      )
+    },
   },
 
   reducers: {

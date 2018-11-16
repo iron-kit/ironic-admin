@@ -3,6 +3,7 @@ import { FormattedMessage, formatMessage } from 'umi/locale';
 import styles from './Login.less';
 import { Alert, Row, Col, Form, Input, Icon, Button, Avatar } from 'antd';
 import { connect } from 'dva';
+import IronSpin from '@/components/IronSpin';
 
 @connect(({ login, loading }) => ({
   login,
@@ -79,7 +80,8 @@ class Login extends React.Component {
                 </Form.Item>
                 <Form.Item style={{ marginBottom: 0 }}>
                   <Button size="large" style={{ width: '100%'}} type="primary" htmlType="submit">
-                    <FormattedMessage id="app.login.login" />
+                    {submitting ? <><IronSpin /> <FormattedMessage id="app.login.logining" /> </> :
+                    <FormattedMessage id="app.login.login" />}
                   </Button>
                 </Form.Item>
               </Form>

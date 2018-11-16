@@ -113,6 +113,7 @@ export default {
   'app.login.sign-in-with': '其他登录方式',
   'app.login.signup': '注册账户',
   'app.login.login': '登录',
+  'app.login.logining': '登录中...',
   'app.register.register': '注册',
   'app.register.get-verification-code': '获取验证码',
   'app.register.sing-in': '使用已有账户登录',
